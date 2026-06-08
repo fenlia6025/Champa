@@ -64,9 +64,9 @@
     <!-- 大厅界面 -->
     <div id="screen-lobby" class="relative w-full h-full flex flex-col text-white">
 
-        <div id="top-header-bar" class="px-2.5 pt-2.5 flex justify-between items-center shadow-xl z-30 relative" style="background:url('assets/bg_top_header.png') no-repeat center/cover">
+        <div id="top-header-bar" class="px-2.5 pt-2.5 flex justify-between items-center shadow-xl z-30 relative">
             <div class="flex items-center gap-2 bg-[#0f172a]/60 pr-4 py-1 rounded-full shadow-inner">
-                <div class="text-white w-9 h-9 rounded-full flex items-center justify-center font-black text-lg shadow-lg text-shadow-sm -ml-2 z-10" style="background:url('assets/bg_level_badge.png') no-repeat center/cover">
+                <div class="text-white w-9 h-9 rounded-full flex items-center justify-center font-black text-lg shadow-lg text-shadow-sm -ml-2 z-10" style="background:url('bg_level_badge.png') no-repeat center/cover">
                     <span id="top-level">1</span>
                 </div>
                 <span class="font-black text-xs text-shadow-sm text-[#bae6fd]">等级</span>
@@ -74,14 +74,14 @@
             
             <div class="flex gap-3">
                 <div class="flex items-center bg-[#0f172a]/60 rounded-full pl-1.5 pr-1 py-1 shadow-inner relative">
-                    <img src="assets/icon_gold.png" class="drop-shadow-md absolute -left-1" alt="金币">
+                    <img src="icon_gold.png" class="drop-shadow-md absolute -left-1" alt="金币">
                     <span class="font-black text-sm ml-4 mr-2 min-w-[36px] text-center text-[#facc15] text-shadow-sm" id="lobby-gold">0</span>
-                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('assets/btn_add.png') no-repeat center/cover">+</button>
+                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('btn_add.png') no-repeat center/cover">+</button>
                 </div>
                 <div class="flex items-center bg-[#0f172a]/60 rounded-full pl-1.5 pr-1 py-1 shadow-inner relative">
-                    <img src="assets/icon_diamond.png" class="drop-shadow-md absolute -left-1" alt="钻石">
+                    <img src="icon_diamond.png" class="drop-shadow-md absolute -left-1" alt="钻石">
                     <span class="font-black text-sm ml-4 mr-2 min-w-[36px] text-center text-[#38bdf8] text-shadow-sm" id="lobby-diamonds">50</span>
-                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('assets/btn_add.png') no-repeat center/cover">+</button>
+                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('btn_add.png') no-repeat center/cover">+</button>
                 </div>
             </div>
         </div>
@@ -91,28 +91,28 @@
             <!-- 【商店页】 -->
             <div id="tab-shop" class="tab-content flex-col items-center w-full pb-10">
                 <div class="flex w-full shadow-lg mb-6 relative z-20">
-                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-xs uppercase tracking-widest" style="background:url('assets/bg_shop_header.png') no-repeat center/contain">绝赞特惠 · 每日刷新</div>
+                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-xs uppercase tracking-widest" style="background:url('bg_shop_header.png') no-repeat center/contain">绝赞特惠 · 每日刷新</div>
                 </div>
                 <div class="grid grid-cols-1 gap-6 px-4 w-full max-w-md">
-                    <div class="border-[4px] border-[#64748b] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('assets/bg_chest_lightning.png') no-repeat center/cover">
-                        <div class="w-1/3 text-center"><img src="assets/img_chest_lightning.png" alt="雷电宝箱"></div>
+                    <div class="border-[4px] border-[#64748b] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('bg_chest_lightning.png') no-repeat center/cover">
+                        <div class="w-1/3 text-center"><img src="img_chest_lightning.png" alt="雷电宝箱"></div>
                         <div class="w-2/3 pl-2 flex flex-col justify-center">
                             <h3 class="text-xl font-black text-[#1e293b] text-shadow-sm">雷电宝箱</h3>
                             <p class="text-[10px] font-bold text-[#334155] mb-2">必定开出大量金币与基础卡</p>
-                            <button onclick="triggerOpenChest(1)" class="btn-heavy border-b-[6px] border-[#14532d] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg" style="background:url('assets/btn_chest_buy.png') no-repeat center/cover">
-                                50 <img src="assets/icon_diamond.png" alt="钻石">
+                            <button onclick="triggerOpenChest(1)" class="btn-heavy border-b-[6px] border-[#14532d] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg" style="background:url('btn_chest_buy.png') no-repeat center/cover">
+                                50 <img src="icon_diamond.png" alt="钻石">
                             </button>
                         </div>
                     </div>
                     
-                    <div class="border-[4px] border-[#4338ca] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('assets/bg_chest_king.png') no-repeat center/cover">
-                        <img src="assets/badge_legendary.png" class="absolute -top-1 -right-1" style="z-index:10" alt="传奇!">
-                        <div class="w-1/3 text-center"><img src="assets/img_chest_king.png" alt="国王宝箱"></div>
+                    <div class="border-[4px] border-[#4338ca] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('bg_chest_king.png') no-repeat center/cover">
+                        <img src="badge_legendary.png" class="absolute -top-1 -right-1" style="z-index:10" alt="传奇!">
+                        <div class="w-1/3 text-center"><img src="img_chest_king.png" alt="国王宝箱"></div>
                         <div class="w-2/3 pl-2 flex flex-col justify-center">
                             <h3 class="text-2xl font-black text-[#1e3a8a] text-shadow-sm">国王宝箱</h3>
                             <p class="text-[10px] font-bold text-[#312e81] mb-2">十连狂欢，极高概率爆出传奇卡</p>
-                            <button onclick="triggerOpenChest(10)" class="btn-heavy border-b-[6px] border-[#854d0e] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg text-shadow-sm" style="background:url('assets/btn_chest_buy_king.png') no-repeat center/cover">
-                                450 <img src="assets/icon_diamond.png" alt="钻石">
+                            <button onclick="triggerOpenChest(10)" class="btn-heavy border-b-[6px] border-[#854d0e] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg text-shadow-sm" style="background:url('btn_chest_buy_king.png') no-repeat center/cover">
+                                450 <img src="icon_diamond.png" alt="钻石">
                             </button>
                         </div>
                     </div>
@@ -121,23 +121,23 @@
 
             <!-- 【对战大厅页】 -->
             <div id="tab-battle" class="tab-content active flex-col items-center w-full min-h-full relative pb-10">
-                <div class="px-8 py-2 rounded-[2rem] shadow-[0_10px_20px_rgba(0,0,0,0.5)] flex flex-col items-center gap-1 relative mt-2" style="background:url('assets/bg_progress_badge.png') no-repeat center/cover">
+                <div class="px-8 py-2 rounded-[2rem] shadow-[0_10px_20px_rgba(0,0,0,0.5)] flex flex-col items-center gap-1 relative mt-2" style="background:url('bg_progress_badge.png') no-repeat center/cover">
                     <div class="text-[10px] font-black text-[#7dd3fc] tracking-widest uppercase mb-1">当前进度</div>
                     <div class="flex items-center gap-3">
-                        <img src="assets/icon_trophy.png" alt="奖杯">
+                        <img src="icon_trophy.png" alt="奖杯">
                         <span class="font-black text-white text-3xl text-shadow-cr" id="battle-level-info">1</span>
                     </div>
                 </div>
                 
                 <div class="flex-1 w-full flex items-center justify-center relative my-6">
                     <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(250,204,21,0.2)_0%,transparent_65%)] animate-pulse"></div>
-                    <div class="relative z-10 transition-transform hover:scale-105"><img src="assets/icon_castle.png" alt="城堡"></div>
+                    <div class="relative z-10 transition-transform hover:scale-105"><img src="icon_castle.png" alt="城堡"></div>
                 </div>
 
                 <div class="w-full px-6 pb-6 flex flex-col items-center relative z-20 mt-auto">
-                    <button onclick="startMatchmaking()" class="btn-heavy btn-breathe w-full max-w-[280px] aspect-[14/5] flex justify-center items-center gap-3" style="background:url('assets/btn_battle.png') no-repeat center/contain">
+                    <button onclick="startMatchmaking()" class="btn-heavy btn-breathe w-full max-w-[280px] aspect-[14/5] flex justify-center items-center gap-3" style="background:url('btn_battle.png') no-repeat center/contain">
                         <span class="text-[#431407] font-black text-4xl text-shadow-sm tracking-[0.2em] ml-2">对 战</span>
-                        <img src="assets/icon_sword.png" alt="⚔️">
+                        <img src="icon_sword.png" alt="⚔️">
                     </button>
                     <div class="text-xs font-bold text-[#94a3b8] mt-6 bg-[#0f172a]/50 px-4 py-1.5 rounded-full">💡 提示：点击己方建筑即可升级</div>
                 </div>
@@ -146,7 +146,7 @@
             <!-- 【卡牌收藏页】 -->
             <div id="tab-cards" class="tab-content flex-col items-center w-full pb-10">
                 <div class="flex w-full shadow-lg relative z-20">
-                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-base" style="background:url('assets/bg_cards_header.png') no-repeat center/contain">我的大军</div>
+                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-base" style="background:url('bg_cards_header.png') no-repeat center/contain">我的大军</div>
                 </div>
                 
                 <div class="w-full px-5 mt-6">
@@ -157,20 +157,20 @@
         </div>
 
         <!-- 全CSS驱动的底部导航栏 -->
-        <div id="nav-bar" class="h-20 flex justify-around items-center px-2 pb-2 shadow-[0_-10px_20px_rgba(0,0,0,0.7)] z-40 relative" style="background:url('assets/bg_nav_bar.png') no-repeat center/cover">
+        <div id="nav-bar" class="h-20 flex justify-around items-center px-2 pb-2 shadow-[0_-10px_20px_rgba(0,0,0,0.7)] z-40 relative" style="background:url('bg_nav_bar.png') no-repeat center/cover">
             <button onclick="switchTab('shop', this)" class="nav-btn w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
-                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
-                <img src="assets/icon_shop.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="商店">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="icon_shop.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="商店">
                 <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">商店</span>
             </button>
             <button onclick="switchTab('battle', this)" class="nav-btn active w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
-                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
-                <img src="assets/icon_battle.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="对战">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="icon_battle.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="对战">
                 <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">对战</span>
             </button>
             <button onclick="switchTab('cards', this)" class="nav-btn w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
-                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
-                <img src="assets/icon_cards.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="卡牌">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="icon_cards.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="卡牌">
                 <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">卡牌</span>
             </button>
         </div>
@@ -178,14 +178,14 @@
 
     <!-- 匹配界面 -->
     <div id="modal-matchmaking" class="modal-overlay hidden flex-col">
-        <img src="assets/icon_compass.png" class="radar-spin" alt="罗盘" style="margin-bottom:2rem">
+        <img src="icon_compass.png" class="radar-spin" alt="罗盘" style="margin-bottom:2rem">
         <h2 class="text-3xl font-black text-white text-shadow-cr mb-4" id="mm-status">寻找对手中...</h2>
         <div class="text-[#facc15] font-bold text-lg mb-8" id="mm-time">预计时间: 0:03</div>
         
         <div id="mm-opponent" class="hidden flex flex-col items-center bg-[#0f172a]/80 p-6 rounded-3xl border-[4px] border-[#ef4444] shadow-[0_0_30px_rgba(239,68,68,0.5)] transform scale-0 animate-[popLoot_0.5s_forwards]">
-            <img src="assets/icon_opponent.png" class="mb-2" id="mm-opp-icon" alt="对手">
+            <img src="icon_opponent.png" class="mb-2" id="mm-opp-icon" alt="对手">
             <div class="text-xl font-black text-[#fca5a5]" id="mm-opp-name">巅峰玩家_司马懿</div>
-            <div class="text-sm font-bold text-[#991b1b] mt-1" id="mm-opp-trophy">奖杯: 8900 <img src="assets/icon_trophy.png" style="display:inline" alt="🏆"></div>
+            <div class="text-sm font-bold text-[#991b1b] mt-1" id="mm-opp-trophy">奖杯: 8900 <img src="icon_trophy.png" style="display:inline" alt="🏆"></div>
         </div>
     </div>
 
@@ -207,13 +207,13 @@
 
         <div class="absolute top-12 left-0 w-full px-4 flex justify-between items-start pointer-events-none z-10">
             <div class="flex items-center gap-1.5 bg-[#1e3a8a]/90 border-[3px] border-[#3b82f6] px-4 py-1.5 rounded-full text-white pointer-events-auto shadow-lg">
-                <img src="assets/icon_player.png" alt="玩家"><span class="font-black text-sm"><span id="ingame-p1-count">1</span></span>
+                <img src="icon_player.png" alt="玩家"><span class="font-black text-sm"><span id="ingame-p1-count">1</span></span>
             </div>
-            <div class="border-[3px] border-[#ca8a04] px-5 py-2 rounded-2xl text-[#431407] font-black text-center shadow-xl pointer-events-auto" style="background:url('assets/bg_timer.png') no-repeat center/cover">
+            <div class="border-[3px] border-[#ca8a04] px-5 py-2 rounded-2xl text-[#431407] font-black text-center shadow-xl pointer-events-auto" style="background:url('bg_timer.png') no-repeat center/cover">
                 <div class="text-[16px] leading-none tracking-widest drop-shadow-sm" id="ingame-timer">2:00</div>
             </div>
             <div class="flex items-center gap-1.5 bg-[#7f1d1d]/90 border-[3px] border-[#ef4444] px-4 py-1.5 rounded-full text-white pointer-events-auto shadow-lg">
-                <span class="font-black text-sm"><span id="ingame-p2-count">1</span></span><img src="assets/icon_enemy.png" alt="敌人">
+                <span class="font-black text-sm"><span id="ingame-p2-count">1</span></span><img src="icon_enemy.png" alt="敌人">
             </div>
         </div>
 
@@ -222,7 +222,7 @@
             <div class="w-full h-8 bg-[#0f172a] border-t-[4px] border-[#000] relative flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.9)] pointer-events-auto">
                 <div class="absolute left-0 top-0 h-full bg-gradient-to-r from-[#d946ef] to-[#f0abfc] border-r-[3px] border-[#fdf4ff] shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300" id="ingame-elixir-bar" style="width: 50%"></div>
                 <div class="absolute left-4 text-[14px] font-black text-white text-shadow-cr flex items-center gap-1.5 z-10 drop-shadow-md">
-                    <img src="assets/icon_star.png" alt="星星"> <span id="ingame-coins">50</span>
+                    <img src="icon_star.png" alt="星星"> <span id="ingame-coins">50</span>
                 </div>
             </div>
         </div>
@@ -230,21 +230,21 @@
 
     <!-- 弹窗 -->
     <div id="modal-chest" class="modal-overlay hidden">
-        <div class="border-[6px] border-[#38bdf8] p-8 rounded-[2rem] text-center text-white w-[85%] max-w-md shadow-[0_0_40px_rgba(56,189,248,0.6)] relative overflow-hidden flex flex-col items-center" style="background:url('assets/bg_modal_chest.png') no-repeat center/cover">
+        <div class="border-[6px] border-[#38bdf8] p-8 rounded-[2rem] text-center text-white w-[85%] max-w-md shadow-[0_0_40px_rgba(56,189,248,0.6)] relative overflow-hidden flex flex-col items-center" style="background:url('bg_modal_chest.png') no-repeat center/cover">
             <h2 class="text-4xl font-black text-[#fde047] text-shadow-cr mb-4 z-10" id="chest-title">卡牌解锁！</h2>
             <div class="grid grid-cols-4 gap-3 w-full z-10 mb-6" id="chest-loot-grid"></div>
-            <button onclick="closeChestModal()" class="btn-heavy w-full py-4 border-b-[8px] border-[#14532d] rounded-2xl text-white font-black text-2xl z-10 shadow-xl text-shadow-sm" style="background:url('assets/btn_confirm.png') no-repeat center/cover">确 定</button>
+            <button onclick="closeChestModal()" class="btn-heavy w-full py-4 border-b-[8px] border-[#14532d] rounded-2xl text-white font-black text-2xl z-10 shadow-xl text-shadow-sm" style="background:url('btn_confirm.png') no-repeat center/cover">确 定</button>
         </div>
     </div>
 
     <div id="modal-gameover" class="modal-overlay hidden">
-        <div class="border-[6px] border-[#1e293b] p-8 rounded-[2rem] text-center w-[85%] max-w-sm shadow-2xl relative flex flex-col items-center" style="background:url('assets/bg_modal_gameover.png') no-repeat center/cover">
+        <div class="border-[6px] border-[#1e293b] p-8 rounded-[2rem] text-center w-[85%] max-w-sm shadow-2xl relative flex flex-col items-center" style="background:url('bg_modal_gameover.png') no-repeat center/cover">
             <h2 class="text-5xl font-black mb-3 text-shadow-sm" id="go-title">胜利!</h2>
             <div class="text-base text-[#475569] font-bold mb-6 w-full" id="go-desc"></div>
             <div class="flex flex-col gap-4 w-full">
-                <button id="btn-free-chest" class="btn-heavy hidden w-full py-3 border-b-[6px] border-[#4c1d95] rounded-xl text-white font-black text-xl shadow-lg text-shadow-sm flex justify-center items-center gap-2" style="background:url('assets/btn_free_chest.png') no-repeat center/cover"><img src="assets/icon_gold.png" alt="金币"> 开启奖励宝箱!</button>
-                <button id="btn-go-action" class="btn-heavy w-full py-4 border-b-[8px] border-[#1e3a8a] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm" style="background:url('assets/btn_confirm_blue.png') no-repeat center/cover">确 定</button>
-                <button onclick="exitBattleToLobby()" class="btn-heavy w-full py-3 border-b-[6px] border-[#94a3b8] text-[#334155] font-black text-xl rounded-2xl shadow-md" style="background:url('assets/btn_return.png') no-repeat center/cover">返回大厅</button>
+                <button id="btn-free-chest" class="btn-heavy hidden w-full py-3 border-b-[6px] border-[#4c1d95] rounded-xl text-white font-black text-xl shadow-lg text-shadow-sm flex justify-center items-center gap-2" style="background:url('btn_free_chest.png') no-repeat center/cover"><img src="icon_gold.png" alt="金币"> 开启奖励宝箱!</button>
+                <button id="btn-go-action" class="btn-heavy w-full py-4 border-b-[8px] border-[#1e3a8a] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm" style="background:url('btn_confirm_blue.png') no-repeat center/cover">确 定</button>
+                <button onclick="exitBattleToLobby()" class="btn-heavy w-full py-3 border-b-[6px] border-[#94a3b8] text-[#334155] font-black text-xl rounded-2xl shadow-md" style="background:url('btn_return.png') no-repeat center/cover">返回大厅</button>
             </div>
         </div>
     </div>
@@ -296,12 +296,12 @@ let state = {
 
 function loadSave() { let s = localStorage.getItem('hx_cr_heavy_mw2'); if(s) { try { let obj = JSON.parse(s); if(obj.level) Object.assign(state, obj); } catch(e){} } syncLobbyUI(); }
 
-function getTroopImgSrc(id) { return 'assets/troop_' + id + '.png'; }
+function getTroopImgSrc(id) { return 'troop_' + id + '.png'; }
 function getRarityBg(r) {
-    if(r==='稀有') return 'assets/card_bg_rare.png';
-    if(r==='史诗') return 'assets/card_bg_epic.png';
-    if(r==='传奇') return 'assets/card_bg_legendary.png';
-    return 'assets/card_bg_normal.png';
+    if(r==='稀有') return 'card_bg_rare.png';
+    if(r==='史诗') return 'card_bg_epic.png';
+    if(r==='传奇') return 'card_bg_legendary.png';
+    return 'card_bg_normal.png';
 }
 function getRarityBorder(r) {
     if(r==='稀有') return '#f97316';
@@ -333,14 +333,14 @@ function syncLobbyUI() {
         }
 
         let upgradeHtml = canUpgrade ? 
-            `<button onclick="event.stopPropagation(); upgradeCard('${id}')" class="absolute bottom-[-10px] w-11/12 border-b-[4px] border-[#14532d] text-white text-[10px] font-black py-1 rounded-full shadow-lg active:mt-1 active:border-b-0 z-20" style="background:url('assets/btn_upgrade.png') no-repeat center/cover">升级!</button>` : 
+            `<button onclick="event.stopPropagation(); upgradeCard('${id}')" class="absolute bottom-[-10px] w-11/12 border-b-[4px] border-[#14532d] text-white text-[10px] font-black py-1 rounded-full shadow-lg active:mt-1 active:border-b-0 z-20" style="background:url('btn_upgrade.png') no-repeat center/cover">升级!</button>` : 
             `<div class="absolute bottom-1 w-11/12 h-3 bg-black rounded-full overflow-hidden border border-[#000] shadow-inner z-20"><div class="h-full bg-[#3b82f6]" style="width: ${progressPct}%"></div><div class="absolute inset-0 flex items-center justify-center text-[8px] text-white font-bold">${t.shards}/${t.req}</div></div>`;
         
         c.innerHTML += `
             <div class="perspective-1000 w-full aspect-[3/4] cursor-pointer" onclick="this.querySelector('.card-inner').classList.toggle('rotate-y-180'); Sound.click();">
                 <div class="card-inner relative w-full h-full transform-style-3d shadow-xl rounded-2xl">
                     <div class="backface-hidden absolute inset-0 border-[4px] rounded-2xl flex flex-col items-center pt-2" style="background:url('${cardBg}') no-repeat center/cover;border-color:${borderColor}">
-                        <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-xl w-6 h-[26px] flex justify-center items-center font-black text-sm z-10 shadow text-shadow-sm" style="background:url('assets/badge_cost.png') no-repeat center/cover">${t.cost}</div>
+                        <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-xl w-6 h-[26px] flex justify-center items-center font-black text-sm z-10 shadow text-shadow-sm" style="background:url('badge_cost.png') no-repeat center/cover">${t.cost}</div>
                         <div class="absolute top-1 right-1.5 text-[10px] font-black text-white text-shadow-cr z-10">Lv.${t.level}</div>
                         <div class="flex-1 flex justify-center items-center z-0"><img src="${troopImg}" alt="${t.name}"></div>
                         <div class="w-full text-center text-white text-xs font-black pb-5 text-shadow-cr z-10 bg-gradient-to-t from-black/60 to-transparent pt-4 rounded-b-xl tracking-wider">${t.name}</div>
@@ -369,7 +369,7 @@ function switchTab(id, el) {
     let lobby = document.getElementById('screen-lobby');
     let header = document.getElementById('top-header-bar');
     let bg = {battle:'bg_battle.png',shop:'bg_shop.png',cards:'bg_cards.png'};
-    lobby.style.background = "url('assets/"+bg[id]+"') no-repeat center/cover";
+    lobby.style.background = "url('"+bg[id]+"') no-repeat center/cover";
     header.style.background = 'transparent';
     header.style.boxShadow = 'none';
 }
@@ -394,10 +394,10 @@ function triggerOpenChest(times) {
             let div = document.createElement('div'); div.className = "bg-[#1e293b] border-[3px] border-[#334155] rounded-xl py-2 flex flex-col items-center justify-center transform scale-0 animate-[popLoot_0.4s_forwards] shadow-lg";
             if(isGold) {
                 let g = 40 + Math.floor(Math.random()*40); state.gold += g;
-                div.innerHTML = `<img src="assets/icon_gold.png"><div class="text-[11px] font-black mt-1 text-[#facc15] text-shadow-sm">+${g}</div>`;
+                div.innerHTML = `<img src="icon_gold.png"><div class="text-[11px] font-black mt-1 text-[#facc15] text-shadow-sm">+${g}</div>`;
             } else {
                 let id = keys[Math.floor(Math.random()*keys.length)]; let amt = 2 + Math.floor(Math.random()*4); state.troops[id].shards += amt; state.troops[id].unlocked = true;
-                div.innerHTML = `<img src="assets/troop_${id}.png"><div class="text-[11px] font-black mt-1 text-[#38bdf8] text-shadow-sm">+${amt}</div>`;
+                div.innerHTML = `<img src="troop_${id}.png"><div class="text-[11px] font-black mt-1 text-[#38bdf8] text-shadow-sm">+${amt}</div>`;
             }
             grid.appendChild(div); document.getElementById('lobby-gold').innerText = state.gold; document.getElementById('lobby-diamonds').innerText = state.diamonds;
         }, i * 100);
@@ -414,9 +414,9 @@ function startMatchmaking() {
     oppNode.classList.add('hidden'); statusNode.innerText = '寻找对手中...';
     
     const oppNames = ["暗影_刺客", "偷塔狂魔", "巅峰玩家_司马懿", "草丛老六", "无情碾压机", "皇家护卫", "傲世_龙骨", "神秘人_X"];
-    document.getElementById('mm-opp-icon').src = 'assets/icon_opponent.png';
+    document.getElementById('mm-opp-icon').src = 'icon_opponent.png';
     document.getElementById('mm-opp-name').innerText = oppNames[Math.floor(Math.random()*oppNames.length)];
-    document.getElementById('mm-opp-trophy').innerHTML = '奖杯: ' + (1000 + Math.floor(Math.random()*8000)) + ' <img src="assets/icon_trophy.png" style="display:inline" alt="奖杯">';
+    document.getElementById('mm-opp-trophy').innerHTML = '奖杯: ' + (1000 + Math.floor(Math.random()*8000)) + ' <img src="icon_trophy.png" style="display:inline" alt="奖杯">';
     
     let time = 0;
     let timer = setInterval(() => {
@@ -440,7 +440,7 @@ let p1Morale = 50, p2Morale = 50;
 function getDist(x1,y1,x2,y2) { return Math.hypot(x2-x1, y2-y1); }
 
 const canvasImgCache = {};
-function loadCanvasImg(name) { const img = new Image(); img.src = 'assets/' + name + '.png'; canvasImgCache[name] = img; }
+function loadCanvasImg(name) { const img = new Image(); img.src = name + '.png'; canvasImgCache[name] = img; }
 function preloadCanvasImages() {
     ['canvas_troop_normal','canvas_troop_cavalry','canvas_troop_golem','canvas_troop_huweimian','canvas_troop_bomber',
      'hex_water','hex_player','hex_enemy','hex_neutral',
@@ -908,7 +908,7 @@ function renderCardsTray() {
             <div onclick="event.stopPropagation(); state.selectedCard='${id}'; Sound.click(); renderCardsTray();" 
                  class="relative flex-shrink-0 w-[64px] h-[85px] rounded-xl ${activeClass} transition-all duration-300 cursor-pointer pointer-events-auto flex flex-col items-center justify-center"
                  style="background:url('${cardBg}') no-repeat center/cover;border-color:${borderColor}">
-                <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-lg rounded-tl-[8px] w-5 h-[22px] flex justify-center items-center font-black text-xs z-10 shadow text-shadow-sm" style="background:url('assets/badge_cost.png') no-repeat center/cover">${cData.cost}</div>
+                <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-lg rounded-tl-[8px] w-5 h-[22px] flex justify-center items-center font-black text-xs z-10 shadow text-shadow-sm" style="background:url('badge_cost.png') no-repeat center/cover">${cData.cost}</div>
                 <img src="${troopImg}" class="mt-1.5 drop-shadow-md z-0 transition-transform" alt="${cData.name}">
                 <div class="text-[10px] font-black text-white text-shadow-cr absolute bottom-1 z-10 w-full text-center leading-tight tracking-wider">${cData.name}</div>
             </div>`;
@@ -956,23 +956,23 @@ function showModalFinal(isWin) {
         f.onclick = () => { m.classList.add('hidden'); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); triggerOpenChest(3); };
     } else { f.classList.add('hidden'); }
 
-    let chestTip = gamesToChest === 0 ? `<div class="text-[#9333ea] font-black mt-2 animate-pulse"><img src="assets/icon_gold.png" style="display:inline" alt="金币"> 获得一个免费战利品宝箱!</div>` : `<div class="text-[#94a3b8] text-xs mt-3 font-bold">距离下个战利品宝箱还有: <span class="text-[#facc15]">${gamesToChest}</span> 局</div>`;
+    let chestTip = gamesToChest === 0 ? `<div class="text-[#9333ea] font-black mt-2 animate-pulse"><img src="icon_gold.png" style="display:inline" alt="金币"> 获得一个免费战利品宝箱!</div>` : `<div class="text-[#94a3b8] text-xs mt-3 font-bold">距离下个战利品宝箱还有: <span class="text-[#facc15]">${gamesToChest}</span> 局</div>`;
 
     if(isWin) {
         let goldReward = 100 + state.level*20; let diaReward = 10 + Math.floor(state.level/2);
         state.gold += goldReward; state.diamonds += diaReward; Sound.click(); 
         t.innerText = "辉煌大胜"; t.className = "text-5xl font-black mb-2 text-[#3b82f6] text-shadow-sm"; 
-        d.innerHTML = `<div class="flex justify-center gap-6 mt-4 mb-2"><div class="flex flex-col items-center bg-[#fefce8] px-4 py-2 rounded-2xl border-[3px] border-[#fde047] shadow"><img src="assets/icon_gold.png"><span class="font-black text-[#ca8a04] mt-1 text-lg">+${goldReward}</span></div><div class="flex flex-col items-center bg-[#f0f9ff] px-4 py-2 rounded-2xl border-[3px] border-[#bae6fd] shadow"><img src="assets/icon_diamond.png"><span class="font-black text-[#0284c7] mt-1 text-lg">+${diaReward}</span></div></div>${chestTip}`;
+        d.innerHTML = `<div class="flex justify-center gap-6 mt-4 mb-2"><div class="flex flex-col items-center bg-[#fefce8] px-4 py-2 rounded-2xl border-[3px] border-[#fde047] shadow"><img src="icon_gold.png"><span class="font-black text-[#ca8a04] mt-1 text-lg">+${goldReward}</span></div><div class="flex flex-col items-center bg-[#f0f9ff] px-4 py-2 rounded-2xl border-[3px] border-[#bae6fd] shadow"><img src="icon_diamond.png"><span class="font-black text-[#0284c7] mt-1 text-lg">+${diaReward}</span></div></div>${chestTip}`;
         state.level++; b.innerText="确 定"; 
         b.className="btn-heavy w-full py-4 border-b-[8px] border-[#1e3a8a] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm";
-        b.style.background = "url('assets/btn_confirm_blue.png') no-repeat center/cover";
+        b.style.background = "url('btn_confirm_blue.png') no-repeat center/cover";
         b.onclick = () => { m.classList.add('hidden'); saveGame(); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); };
     } else {
         Sound.error(); t.innerText = "💀 遗憾败北"; t.className = "text-4xl font-black mb-2 text-[#64748b] text-shadow-sm"; 
         d.innerHTML = `<div class="text-[#64748b] text-base mt-2 font-black border-2 border-dashed border-[#94a3b8] p-4 rounded-xl">城池已失守...<br>请重新编排您的卡组后再来挑战吧！</div>${chestTip}`; 
         b.innerText="重新挑战"; 
         b.className="btn-heavy w-full py-4 border-b-[8px] border-[#7f1d1d] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm";
-        b.style.background = "url('assets/btn_confirm_red.png') no-repeat center/cover";
+        b.style.background = "url('btn_confirm_red.png') no-repeat center/cover";
         b.onclick = () => { m.classList.add('hidden'); startMatchmaking(); };
     }
 }
@@ -982,7 +982,7 @@ function exitBattleToLobby() { Sound.click(); gameActive=false; document.getElem
 window.onload = () => { loadSave(); requestAnimationFrame(loop); document.body.addEventListener('pointerdown', ()=>Sound.init(), {once:true}); 
     let lobby = document.getElementById('screen-lobby');
     let header = document.getElementById('top-header-bar');
-    if(lobby) lobby.style.background = "url('assets/bg_battle.png') no-repeat center/cover";
+    if(lobby) lobby.style.background = "url('bg_battle.png') no-repeat center/cover";
     if(header) { header.style.background = 'transparent'; header.style.boxShadow = 'none'; }
 };
 </script>
