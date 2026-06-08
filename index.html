@@ -56,11 +56,10 @@
         .nav-btn.active .nav-bg { opacity: 1 !important; }
         .nav-btn.active .nav-icon { filter: brightness(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
 
-        /* 手机缩放适配 */
-        #lobby-scaler { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        /* 手机端让内容区可滚动 */
         @media (max-width: 767px) {
-            #screen-lobby { display: flex; align-items: center; justify-content: center; overflow: hidden; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; }
-            #lobby-scaler { width: 430px; height: 932px; transform-origin: center center; flex: none; position: relative; }
+            #screen-lobby .flex-1 { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            #nav-bar { flex-shrink: 0; }
         }
     </style>
 </head>
@@ -69,8 +68,7 @@
 <div id="app" class="relative w-screen h-screen flex flex-col select-none">
 
     <!-- 大厅界面 -->
-    <div id="screen-lobby" class="relative w-full h-full text-white">
-        <div id="lobby-scaler">
+    <div id="screen-lobby" class="relative w-full h-full flex flex-col text-white">
 
         <div id="top-header-bar" class="px-2.5 pt-2.5 flex justify-between items-center shadow-xl z-30 relative">
             <div class="flex items-center gap-2 bg-[#0f172a]/60 pr-4 py-1 rounded-full shadow-inner">
@@ -182,7 +180,6 @@
                 <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">卡牌</span>
             </button>
         </div>
-    </div>
     </div>
 
     <!-- 匹配界面 -->
@@ -988,20 +985,7 @@ function showModalFinal(isWin) {
 
 function exitBattleToLobby() { Sound.click(); gameActive=false; document.getElementById('modal-gameover').classList.add('hidden'); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); saveGame(); }
 
-function fitMobile() {
-    const scaler = document.getElementById('lobby-scaler');
-    if (!scaler) return;
-    if (window.innerWidth < 768) {
-        const s = Math.min(window.innerWidth / 430, window.innerHeight / 932);
-        scaler.style.transform = `scale(${s})`;
-    } else {
-        scaler.style.transform = 'none';
-        scaler.style.width = ''; scaler.style.height = '';
-    }
-}
-window.addEventListener('resize', fitMobile);
-
-window.onload = () => { fitMobile(); loadSave(); requestAnimationFrame(loop); document.body.addEventListener('pointerdown', ()=>Sound.init(), {once:true}); 
+window.onload = () => { loadSave(); requestAnimationFrame(loop); document.body.addEventListener('pointerdown', ()=>Sound.init(), {once:true}); 
     let lobby = document.getElementById('screen-lobby');
     let header = document.getElementById('top-header-bar');
     if(lobby) lobby.style.background = "url('bg_battle.png') no-repeat center/cover";
