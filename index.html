@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>六角占城：完整可玩版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+        
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; font-family: 'ZCOOL KuaiLe', sans-serif;
+            background-color: transparent; 
+            touch-action: none; user-select: none; -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        ::-webkit-scrollbar { display: none; }
+        
+        .text-shadow-cr { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 3px 5px rgba(0,0,0,0.8); }
+        .text-shadow-sm { text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+
+        .btn-heavy { transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .btn-heavy:active { transform: translateY(6px); border-bottom-width: 0px !important; margin-bottom: 6px; filter: brightness(0.9); }
+
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s; }
+        .tab-content.active { display: flex; opacity: 1; }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); }
+
+        .modal-overlay {
+            position: fixed !important; top: 0 !important; left: 0 !important; 
+            width: 100vw !important; height: 100vh !important; 
+            background: rgba(0, 0, 0, 0.85) !important; 
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            z-index: 99999 !important; backdrop-filter: blur(8px);
+            pointer-events: auto !important;
+        }
+
+        .loot-item { transform: scale(0); animation: popLoot 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes popLoot { to { transform: scale(1); } }
+        
+        .radar-spin { animation: spin 2s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .btn-breathe { animation: breathe 2s infinite ease-in-out; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+        .nav-btn { transition: all 0.3s ease; }
+        .nav-btn .nav-bg { opacity: 0; transition: opacity 0.3s ease; }
+        .nav-btn.active { color: white !important; }
+        .nav-btn.active .nav-bg { opacity: 1 !important; }
+        .nav-btn.active .nav-icon { filter: brightness(1.2) drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+    </style>
+</head>
+<body>
+
+<div id="app" class="relative w-screen h-screen flex flex-col select-none">
+
+    <!-- 大厅界面 -->
+    <div id="screen-lobby" class="relative w-full h-full flex flex-col text-white">
+
+        <div id="top-header-bar" class="px-2.5 pt-2.5 flex justify-between items-center shadow-xl z-30 relative" style="background:url('assets/bg_top_header.png') no-repeat center/cover">
+            <div class="flex items-center gap-2 bg-[#0f172a]/60 pr-4 py-1 rounded-full shadow-inner">
+                <div class="text-white w-9 h-9 rounded-full flex items-center justify-center font-black text-lg shadow-lg text-shadow-sm -ml-2 z-10" style="background:url('assets/bg_level_badge.png') no-repeat center/cover">
+                    <span id="top-level">1</span>
+                </div>
+                <span class="font-black text-xs text-shadow-sm text-[#bae6fd]">等级</span>
+            </div>
+            
+            <div class="flex gap-3">
+                <div class="flex items-center bg-[#0f172a]/60 rounded-full pl-1.5 pr-1 py-1 shadow-inner relative">
+                    <img src="assets/icon_gold.png" class="drop-shadow-md absolute -left-1" alt="金币">
+                    <span class="font-black text-sm ml-4 mr-2 min-w-[36px] text-center text-[#facc15] text-shadow-sm" id="lobby-gold">0</span>
+                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('assets/btn_add.png') no-repeat center/cover">+</button>
+                </div>
+                <div class="flex items-center bg-[#0f172a]/60 rounded-full pl-1.5 pr-1 py-1 shadow-inner relative">
+                    <img src="assets/icon_diamond.png" class="drop-shadow-md absolute -left-1" alt="钻石">
+                    <span class="font-black text-sm ml-4 mr-2 min-w-[36px] text-center text-[#38bdf8] text-shadow-sm" id="lobby-diamonds">50</span>
+                    <button class="w-6 h-6 rounded flex items-center justify-center font-black text-white leading-none border-b-[3px] border-[#14532d] shadow active:translate-y-[2px] active:border-b-0 text-xl" style="background:url('assets/btn_add.png') no-repeat center/cover">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto relative z-10">
+            
+            <!-- 【商店页】 -->
+            <div id="tab-shop" class="tab-content flex-col items-center w-full pb-10">
+                <div class="flex w-full shadow-lg mb-6 relative z-20">
+                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-xs uppercase tracking-widest" style="background:url('assets/bg_shop_header.png') no-repeat center/contain">绝赞特惠 · 每日刷新</div>
+                </div>
+                <div class="grid grid-cols-1 gap-6 px-4 w-full max-w-md">
+                    <div class="border-[4px] border-[#64748b] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('assets/bg_chest_lightning.png') no-repeat center/cover">
+                        <div class="w-1/3 text-center"><img src="assets/img_chest_lightning.png" alt="雷电宝箱"></div>
+                        <div class="w-2/3 pl-2 flex flex-col justify-center">
+                            <h3 class="text-xl font-black text-[#1e293b] text-shadow-sm">雷电宝箱</h3>
+                            <p class="text-[10px] font-bold text-[#334155] mb-2">必定开出大量金币与基础卡</p>
+                            <button onclick="triggerOpenChest(1)" class="btn-heavy border-b-[6px] border-[#14532d] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg" style="background:url('assets/btn_chest_buy.png') no-repeat center/cover">
+                                50 <img src="assets/icon_diamond.png" alt="钻石">
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-[4px] border-[#4338ca] rounded-2xl flex items-center p-3 relative overflow-hidden shadow-2xl" style="background:url('assets/bg_chest_king.png') no-repeat center/cover">
+                        <img src="assets/badge_legendary.png" class="absolute -top-1 -right-1" style="z-index:10" alt="传奇!">
+                        <div class="w-1/3 text-center"><img src="assets/img_chest_king.png" alt="国王宝箱"></div>
+                        <div class="w-2/3 pl-2 flex flex-col justify-center">
+                            <h3 class="text-2xl font-black text-[#1e3a8a] text-shadow-sm">国王宝箱</h3>
+                            <p class="text-[10px] font-bold text-[#312e81] mb-2">十连狂欢，极高概率爆出传奇卡</p>
+                            <button onclick="triggerOpenChest(10)" class="btn-heavy border-b-[6px] border-[#854d0e] text-white font-black text-lg py-2 rounded-xl flex justify-center items-center gap-2 shadow-lg text-shadow-sm" style="background:url('assets/btn_chest_buy_king.png') no-repeat center/cover">
+                                450 <img src="assets/icon_diamond.png" alt="钻石">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 【对战大厅页】 -->
+            <div id="tab-battle" class="tab-content active flex-col items-center w-full min-h-full relative pb-10">
+                <div class="px-8 py-2 rounded-[2rem] shadow-[0_10px_20px_rgba(0,0,0,0.5)] flex flex-col items-center gap-1 relative mt-2" style="background:url('assets/bg_progress_badge.png') no-repeat center/cover">
+                    <div class="text-[10px] font-black text-[#7dd3fc] tracking-widest uppercase mb-1">当前进度</div>
+                    <div class="flex items-center gap-3">
+                        <img src="assets/icon_trophy.png" alt="奖杯">
+                        <span class="font-black text-white text-3xl text-shadow-cr" id="battle-level-info">1</span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 w-full flex items-center justify-center relative my-6">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(250,204,21,0.2)_0%,transparent_65%)] animate-pulse"></div>
+                    <div class="relative z-10 transition-transform hover:scale-105"><img src="assets/icon_castle.png" alt="城堡"></div>
+                </div>
+
+                <div class="w-full px-6 pb-6 flex flex-col items-center relative z-20 mt-auto">
+                    <button onclick="startMatchmaking()" class="btn-heavy btn-breathe w-full max-w-[280px] aspect-[14/5] flex justify-center items-center gap-3" style="background:url('assets/btn_battle.png') no-repeat center/contain">
+                        <span class="text-[#431407] font-black text-4xl text-shadow-sm tracking-[0.2em] ml-2">对 战</span>
+                        <img src="assets/icon_sword.png" alt="⚔️">
+                    </button>
+                    <div class="text-xs font-bold text-[#94a3b8] mt-6 bg-[#0f172a]/50 px-4 py-1.5 rounded-full">💡 提示：点击己方建筑即可升级</div>
+                </div>
+            </div>
+
+            <!-- 【卡牌收藏页】 -->
+            <div id="tab-cards" class="tab-content flex-col items-center w-full pb-10">
+                <div class="flex w-full shadow-lg relative z-20">
+                    <div class="flex-1 h-14 flex items-center justify-center font-black text-white text-base" style="background:url('assets/bg_cards_header.png') no-repeat center/contain">我的大军</div>
+                </div>
+                
+                <div class="w-full px-5 mt-6">
+                    <div class="grid grid-cols-3 gap-5 w-full" id="cards-container"></div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 全CSS驱动的底部导航栏 -->
+        <div id="nav-bar" class="h-20 flex justify-around items-center px-2 pb-2 shadow-[0_-10px_20px_rgba(0,0,0,0.7)] z-40 relative" style="background:url('assets/bg_nav_bar.png') no-repeat center/cover">
+            <button onclick="switchTab('shop', this)" class="nav-btn w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="assets/icon_shop.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="商店">
+                <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">商店</span>
+            </button>
+            <button onclick="switchTab('battle', this)" class="nav-btn active w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="assets/icon_battle.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="对战">
+                <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">对战</span>
+            </button>
+            <button onclick="switchTab('cards', this)" class="nav-btn w-[30%] h-14 rounded-2xl relative flex flex-col items-center justify-center text-[#64748b]">
+                <div class="nav-bg absolute inset-0 rounded-2xl pointer-events-none shadow-inner" style="background:url('assets/bg_nav_active.png') no-repeat center/contain"></div>
+                <img src="assets/icon_cards.png" class="nav-icon drop-shadow-md relative z-10 transition-transform" alt="卡牌">
+                <span class="nav-text text-[11px] font-black tracking-wide relative z-10 transition-colors mt-0.5">卡牌</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 匹配界面 -->
+    <div id="modal-matchmaking" class="modal-overlay hidden flex-col">
+        <img src="assets/icon_compass.png" class="radar-spin" alt="罗盘" style="margin-bottom:2rem">
+        <h2 class="text-3xl font-black text-white text-shadow-cr mb-4" id="mm-status">寻找对手中...</h2>
+        <div class="text-[#facc15] font-bold text-lg mb-8" id="mm-time">预计时间: 0:03</div>
+        
+        <div id="mm-opponent" class="hidden flex flex-col items-center bg-[#0f172a]/80 p-6 rounded-3xl border-[4px] border-[#ef4444] shadow-[0_0_30px_rgba(239,68,68,0.5)] transform scale-0 animate-[popLoot_0.5s_forwards]">
+            <img src="assets/icon_opponent.png" class="mb-2" id="mm-opp-icon" alt="对手">
+            <div class="text-xl font-black text-[#fca5a5]" id="mm-opp-name">巅峰玩家_司马懿</div>
+            <div class="text-sm font-bold text-[#991b1b] mt-1" id="mm-opp-trophy">奖杯: 8900 <img src="assets/icon_trophy.png" style="display:inline" alt="🏆"></div>
+        </div>
+    </div>
+
+    <!-- 局内战斗界面 -->
+    <div id="screen-game" class="hidden absolute top-0 left-0 w-full h-full bg-[#050b14] flex flex-col z-50">
+        <canvas id="gameCanvas" class="flex-1 block w-full h-full"></canvas>
+        
+        <!-- 蘑菇战争：全局士气槽 -->
+        <div class="absolute top-2 w-full flex justify-center z-10 pointer-events-none">
+            <div class="w-[80%] max-w-[300px] flex flex-col items-center">
+                <div class="text-[10px] font-black text-[#facc15] text-shadow-cr mb-1 tracking-widest bg-[#000000]/60 px-3 py-0.5 rounded-full border border-[#333]">全局士气</div>
+                <div class="w-full h-3.5 bg-[#1e293b] border-2 border-black rounded-full overflow-hidden flex relative shadow-[0_0_10px_rgba(0,0,0,0.8)]">
+                    <div id="morale-bar-p1" class="h-full bg-gradient-to-r from-[#2563eb] to-[#60a5fa] transition-all duration-300" style="width: 50%"></div>
+                    <div id="morale-bar-p2" class="h-full bg-gradient-to-r from-[#f87171] to-[#dc2626] transition-all duration-300" style="width: 50%"></div>
+                    <div class="absolute inset-0 flex justify-center items-center opacity-50"><div class="w-0.5 h-full bg-white"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute top-12 left-0 w-full px-4 flex justify-between items-start pointer-events-none z-10">
+            <div class="flex items-center gap-1.5 bg-[#1e3a8a]/90 border-[3px] border-[#3b82f6] px-4 py-1.5 rounded-full text-white pointer-events-auto shadow-lg">
+                <img src="assets/icon_player.png" alt="玩家"><span class="font-black text-sm"><span id="ingame-p1-count">1</span></span>
+            </div>
+            <div class="border-[3px] border-[#ca8a04] px-5 py-2 rounded-2xl text-[#431407] font-black text-center shadow-xl pointer-events-auto" style="background:url('assets/bg_timer.png') no-repeat center/cover">
+                <div class="text-[16px] leading-none tracking-widest drop-shadow-sm" id="ingame-timer">2:00</div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-[#7f1d1d]/90 border-[3px] border-[#ef4444] px-4 py-1.5 rounded-full text-white pointer-events-auto shadow-lg">
+                <span class="font-black text-sm"><span id="ingame-p2-count">1</span></span><img src="assets/icon_enemy.png" alt="敌人">
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#020617] via-[#0f172a] to-transparent pt-12 flex flex-col items-center z-50 pointer-events-none">
+            <div class="w-full flex gap-4 pb-6 justify-center px-2 items-end pointer-events-auto" id="ingame-cards-tray"></div>
+            <div class="w-full h-8 bg-[#0f172a] border-t-[4px] border-[#000] relative flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.9)] pointer-events-auto">
+                <div class="absolute left-0 top-0 h-full bg-gradient-to-r from-[#d946ef] to-[#f0abfc] border-r-[3px] border-[#fdf4ff] shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300" id="ingame-elixir-bar" style="width: 50%"></div>
+                <div class="absolute left-4 text-[14px] font-black text-white text-shadow-cr flex items-center gap-1.5 z-10 drop-shadow-md">
+                    <img src="assets/icon_star.png" alt="星星"> <span id="ingame-coins">50</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div id="modal-chest" class="modal-overlay hidden">
+        <div class="border-[6px] border-[#38bdf8] p-8 rounded-[2rem] text-center text-white w-[85%] max-w-md shadow-[0_0_40px_rgba(56,189,248,0.6)] relative overflow-hidden flex flex-col items-center" style="background:url('assets/bg_modal_chest.png') no-repeat center/cover">
+            <h2 class="text-4xl font-black text-[#fde047] text-shadow-cr mb-4 z-10" id="chest-title">卡牌解锁！</h2>
+            <div class="grid grid-cols-4 gap-3 w-full z-10 mb-6" id="chest-loot-grid"></div>
+            <button onclick="closeChestModal()" class="btn-heavy w-full py-4 border-b-[8px] border-[#14532d] rounded-2xl text-white font-black text-2xl z-10 shadow-xl text-shadow-sm" style="background:url('assets/btn_confirm.png') no-repeat center/cover">确 定</button>
+        </div>
+    </div>
+
+    <div id="modal-gameover" class="modal-overlay hidden">
+        <div class="border-[6px] border-[#1e293b] p-8 rounded-[2rem] text-center w-[85%] max-w-sm shadow-2xl relative flex flex-col items-center" style="background:url('assets/bg_modal_gameover.png') no-repeat center/cover">
+            <h2 class="text-5xl font-black mb-3 text-shadow-sm" id="go-title">胜利!</h2>
+            <div class="text-base text-[#475569] font-bold mb-6 w-full" id="go-desc"></div>
+            <div class="flex flex-col gap-4 w-full">
+                <button id="btn-free-chest" class="btn-heavy hidden w-full py-3 border-b-[6px] border-[#4c1d95] rounded-xl text-white font-black text-xl shadow-lg text-shadow-sm flex justify-center items-center gap-2" style="background:url('assets/btn_free_chest.png') no-repeat center/cover"><img src="assets/icon_gold.png" alt="金币"> 开启奖励宝箱!</button>
+                <button id="btn-go-action" class="btn-heavy w-full py-4 border-b-[8px] border-[#1e3a8a] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm" style="background:url('assets/btn_confirm_blue.png') no-repeat center/cover">确 定</button>
+                <button onclick="exitBattleToLobby()" class="btn-heavy w-full py-3 border-b-[6px] border-[#94a3b8] text-[#334155] font-black text-xl rounded-2xl shadow-md" style="background:url('assets/btn_return.png') no-repeat center/cover">返回大厅</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ================= 基础配置 =================
+const HEX_SIZE = 36; const MAP_COLS = 9; const MAP_ROWS = 15;
+const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+let cw, ch; let camera = { x: 0, y: 0, scale: 1 };
+
+// ================= 音效引擎 =================
+const Sound = {
+    ctx: null, lastPlay: {},
+    init() { try { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if(this.ctx.state === 'suspended') this.ctx.resume(); } catch(e){} },
+    play(freq, type, duration, vol, slideFreq, key) {
+        if (!this.ctx) return; let now = Date.now(); if (key && this.lastPlay[key] && now - this.lastPlay[key] < 50) return; this.lastPlay[key] = now;
+        try {
+            const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+            osc.type = type; osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            if (slideFreq) osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
+            gain.gain.setValueAtTime(vol, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+            osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {}
+    },
+    click() { this.play(500, 'sine', 0.1, 0.08, null, 'ck'); },
+    dispatch() { this.play(250, 'sine', 0.15, 0.05, 600, 'dp'); },
+    hit() { this.play(100, 'square', 0.15, 0.08, 40, 'ht'); },
+    capture() { this.play(440, 'triangle', 0.15, 0.15, null, 'cp'); setTimeout(() => this.play(554, 'triangle', 0.15, 0.15, null, 'cp2'), 100); setTimeout(() => this.play(659, 'triangle', 0.25, 0.15, null, 'cp3'), 200); },
+    magic() { this.play(600, 'sine', 0.15, 0.1, null, 'mg'); setTimeout(() => this.play(800, 'sine', 0.15, 0.1, null, 'mg2'), 80); },
+    cheer() { this.play(800, 'sine', 0.1, 0.15); setTimeout(()=>this.play(1200, 'sine', 0.2, 0.15), 100); setTimeout(()=>this.play(1600, 'sine', 0.4, 0.15), 200); },
+    error() { this.play(150, 'sawtooth', 0.3, 0.15, 80, 'er'); }
+};
+
+// ================= 全局状态 =================
+let state = {
+    level: 1, gold: 0, diamonds: 50, selectedCard: 'normal', gamesPlayed: 0,
+    troops: {
+        normal: { name: '果冻兵', icon: '🟢', level: 1, shards: 0, req: 10, unlocked: true, cost: 2, hp: 15, spd: 45, dmg: 1, rarity: '普通', desc: '数量就是力量！均衡的基础兵种。' },
+        cavalry: { name: '白马骑', icon: '🐎', level: 1, shards: 0, req: 10, unlocked: false, cost: 4, hp: 20, spd: 110, dmg: 1, rarity: '稀有', desc: '移速极快，适合突袭空虚的城池。' },
+        golem: { name: '巨石怪', icon: '🪨', level: 1, shards: 0, req: 20, unlocked: false, cost: 6, hp: 70, spd: 20, dmg: 5, rarity: '史诗', desc: '体型巨大，血厚防高，真正的肉盾。' },
+        huweimian: { name: '胡未眠', icon: '🥷', level: 1, shards: 0, req: 20, unlocked: false, cost: 5, hp: 30, spd: 75, dmg: 3, rarity: '史诗', desc: '隐秘行动的刺客，移动时很难被察觉。' },
+        bomber: { name: '爆破兵', icon: '💣', level: 1, shards: 0, req: 50, unlocked: false, cost: 8, hp: 10, spd: 80, dmg: 30, rarity: '传奇', desc: '撞击城池产生极其恐怖的爆炸伤害！' }
+    }
+};
+
+function loadSave() { let s = localStorage.getItem('hx_cr_heavy_mw2'); if(s) { try { let obj = JSON.parse(s); if(obj.level) Object.assign(state, obj); } catch(e){} } syncLobbyUI(); }
+
+function getTroopImgSrc(id) { return 'assets/troop_' + id + '.png'; }
+function getRarityBg(r) {
+    if(r==='稀有') return 'assets/card_bg_rare.png';
+    if(r==='史诗') return 'assets/card_bg_epic.png';
+    if(r==='传奇') return 'assets/card_bg_legendary.png';
+    return 'assets/card_bg_normal.png';
+}
+function getRarityBorder(r) {
+    if(r==='稀有') return '#f97316';
+    if(r==='史诗') return '#c084fc';
+    if(r==='传奇') return '#38bdf8';
+    return '#94a3b8';
+}
+function saveGame() { localStorage.setItem('hx_cr_heavy_mw2', JSON.stringify(state)); syncLobbyUI(); }
+
+function syncLobbyUI() {
+    document.getElementById('battle-level-info').innerText = state.level;
+    document.getElementById('top-level').innerText = state.level;
+    document.getElementById('lobby-gold').innerText = state.gold;
+    document.getElementById('lobby-diamonds').innerText = state.diamonds;
+    
+    const c = document.getElementById('cards-container'); c.innerHTML = '';
+    
+    for(let id in state.troops) {
+        let t = state.troops[id];
+        let borderColor = getRarityBorder(t.rarity);
+        let cardBg = getRarityBg(t.rarity);
+        let progressPct = Math.min(100, (t.shards/t.req)*100);
+        let canUpgrade = t.shards >= t.req && state.gold >= 50;
+        let troopImg = getTroopImgSrc(id);
+        
+        if (!t.unlocked) {
+            c.innerHTML += `<div class="relative w-full aspect-[3/4] bg-[#0f172a]/80 border-[3px] border-[#1e293b] rounded-2xl overflow-hidden flex flex-col items-center justify-center shadow-inner opacity-70"><img src="${troopImg}" style="margin-bottom:8px;opacity:0.5;filter:grayscale(1)" alt="${t.name}"><div class="text-xs text-[#64748b] font-black">未解锁</div></div>`;
+            continue;
+        }
+
+        let upgradeHtml = canUpgrade ? 
+            `<button onclick="event.stopPropagation(); upgradeCard('${id}')" class="absolute bottom-[-10px] w-11/12 border-b-[4px] border-[#14532d] text-white text-[10px] font-black py-1 rounded-full shadow-lg active:mt-1 active:border-b-0 z-20" style="background:url('assets/btn_upgrade.png') no-repeat center/cover">升级!</button>` : 
+            `<div class="absolute bottom-1 w-11/12 h-3 bg-black rounded-full overflow-hidden border border-[#000] shadow-inner z-20"><div class="h-full bg-[#3b82f6]" style="width: ${progressPct}%"></div><div class="absolute inset-0 flex items-center justify-center text-[8px] text-white font-bold">${t.shards}/${t.req}</div></div>`;
+        
+        c.innerHTML += `
+            <div class="perspective-1000 w-full aspect-[3/4] cursor-pointer" onclick="this.querySelector('.card-inner').classList.toggle('rotate-y-180'); Sound.click();">
+                <div class="card-inner relative w-full h-full transform-style-3d shadow-xl rounded-2xl">
+                    <div class="backface-hidden absolute inset-0 border-[4px] rounded-2xl flex flex-col items-center pt-2" style="background:url('${cardBg}') no-repeat center/cover;border-color:${borderColor}">
+                        <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-xl w-6 h-[26px] flex justify-center items-center font-black text-sm z-10 shadow text-shadow-sm" style="background:url('assets/badge_cost.png') no-repeat center/cover">${t.cost}</div>
+                        <div class="absolute top-1 right-1.5 text-[10px] font-black text-white text-shadow-cr z-10">Lv.${t.level}</div>
+                        <div class="flex-1 flex justify-center items-center z-0"><img src="${troopImg}" alt="${t.name}"></div>
+                        <div class="w-full text-center text-white text-xs font-black pb-5 text-shadow-cr z-10 bg-gradient-to-t from-black/60 to-transparent pt-4 rounded-b-xl tracking-wider">${t.name}</div>
+                        ${upgradeHtml}
+                    </div>
+                    <div class="backface-hidden absolute inset-0 bg-[#0f172a] border-[4px] rounded-2xl rotate-y-180 p-3 flex flex-col items-center justify-center text-center" style="border-color:${borderColor}">
+                        <img src="${troopImg}" class="mb-2" alt="${t.name}">
+                        <div class="text-sm font-black text-[#facc15] mb-2">${t.name}</div>
+                        <div class="text-[10px] font-bold text-[#94a3b8] leading-relaxed">${t.desc}</div>
+                    </div>
+                </div>
+            </div>`;
+    }
+}
+
+function switchTab(id, el) {
+    Sound.click();
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    
+    document.querySelectorAll('.nav-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    el.classList.add('active');
+    
+    let lobby = document.getElementById('screen-lobby');
+    let header = document.getElementById('top-header-bar');
+    let bg = {battle:'bg_battle.png',shop:'bg_shop.png',cards:'bg_cards.png'};
+    lobby.style.background = "url('assets/"+bg[id]+"') no-repeat center/cover";
+    header.style.background = 'transparent';
+    header.style.boxShadow = 'none';
+}
+
+function upgradeCard(id) {
+    Sound.click(); let t = state.troops[id];
+    if (t.shards >= t.req && state.gold >= 50) { state.gold -= 50; t.shards -= t.req; t.level++; t.req = Math.floor(t.req * 1.5); saveGame(); Sound.capture(); } else { Sound.error(); }
+}
+
+function triggerOpenChest(times) {
+    let cost = times === 10 ? 450 : (times === 3 ? 0 : 50);
+    if(state.diamonds < cost) { Sound.error(); return alert("钻石不足！"); }
+    state.diamonds -= cost; Sound.cheer();
+    
+    document.getElementById('chest-title').innerText = times===3 ? "免费战利品!" : "卡牌解锁！";
+    let grid = document.getElementById('chest-loot-grid'); grid.innerHTML = '';
+    let keys = Object.keys(state.troops); let draws = times === 1 ? 3 : (times === 3 ? 6 : 20);
+    
+    for(let i=0; i<draws; i++) {
+        setTimeout(() => {
+            Sound.click(); let isGold = Math.random() < 0.4;
+            let div = document.createElement('div'); div.className = "bg-[#1e293b] border-[3px] border-[#334155] rounded-xl py-2 flex flex-col items-center justify-center transform scale-0 animate-[popLoot_0.4s_forwards] shadow-lg";
+            if(isGold) {
+                let g = 40 + Math.floor(Math.random()*40); state.gold += g;
+                div.innerHTML = `<img src="assets/icon_gold.png"><div class="text-[11px] font-black mt-1 text-[#facc15] text-shadow-sm">+${g}</div>`;
+            } else {
+                let id = keys[Math.floor(Math.random()*keys.length)]; let amt = 2 + Math.floor(Math.random()*4); state.troops[id].shards += amt; state.troops[id].unlocked = true;
+                div.innerHTML = `<img src="assets/troop_${id}.png"><div class="text-[11px] font-black mt-1 text-[#38bdf8] text-shadow-sm">+${amt}</div>`;
+            }
+            grid.appendChild(div); document.getElementById('lobby-gold').innerText = state.gold; document.getElementById('lobby-diamonds').innerText = state.diamonds;
+        }, i * 100);
+    }
+    document.getElementById('modal-chest').classList.remove('hidden'); saveGame();
+}
+
+function closeChestModal() { Sound.click(); document.getElementById('modal-chest').classList.add('hidden'); syncLobbyUI(); }
+
+function startMatchmaking() {
+    let mm = document.getElementById('modal-matchmaking'); if (!mm.classList.contains('hidden')) return; 
+    Sound.click(); mm.classList.remove('hidden'); mm.classList.add('flex');
+    let oppNode = document.getElementById('mm-opponent'); let statusNode = document.getElementById('mm-status');
+    oppNode.classList.add('hidden'); statusNode.innerText = '寻找对手中...';
+    
+    const oppNames = ["暗影_刺客", "偷塔狂魔", "巅峰玩家_司马懿", "草丛老六", "无情碾压机", "皇家护卫", "傲世_龙骨", "神秘人_X"];
+    document.getElementById('mm-opp-icon').src = 'assets/icon_opponent.png';
+    document.getElementById('mm-opp-name').innerText = oppNames[Math.floor(Math.random()*oppNames.length)];
+    document.getElementById('mm-opp-trophy').innerHTML = '奖杯: ' + (1000 + Math.floor(Math.random()*8000)) + ' <img src="assets/icon_trophy.png" style="display:inline" alt="奖杯">';
+    
+    let time = 0;
+    let timer = setInterval(() => {
+        time++; document.getElementById('mm-time').innerText = '预计时间: 0:0' + Math.max(0, 3-time);
+        if(time >= 2) { 
+            clearInterval(timer); Sound.capture(); statusNode.innerText = '对手找到!'; oppNode.classList.remove('hidden');
+            setTimeout(() => { mm.classList.add('hidden'); mm.classList.remove('flex'); enterBattleScreen(); }, 1800);
+        }
+    }, 1000);
+}
+
+// ================= 战场核心逻辑 =================
+let gameActive = false; 
+let isCelebrating = false, celebrateTimer = 0, matchWon = false; 
+let mapHexes = {}, cities = [], troops = [], particles = [], floatingTexts = [], buffs = [], projectiles = [];
+let ingameCoins = 50, ingameTimer = 120;
+let dragSource = null, dragX = 0, dragY = 0, isDragging = false;
+let frameCounter = 0;
+let p1Morale = 50, p2Morale = 50;
+
+function getDist(x1,y1,x2,y2) { return Math.hypot(x2-x1, y2-y1); }
+
+const canvasImgCache = {};
+function loadCanvasImg(name) { const img = new Image(); img.src = 'assets/' + name + '.png'; canvasImgCache[name] = img; }
+function preloadCanvasImages() {
+    ['canvas_troop_normal','canvas_troop_cavalry','canvas_troop_golem','canvas_troop_huweimian','canvas_troop_bomber',
+     'hex_water','hex_player','hex_enemy','hex_neutral',
+     'building_home','building_tower','building_forge',
+     'buff_chicken','buff_rage','buff_gold','buff_lightning'].forEach(loadCanvasImg);
+}
+function drawCanvasImg(name, x, y, w, h) {
+    const img = canvasImgCache[name];
+    if(img && img.complete && img.naturalWidth > 0) { ctx.drawImage(img, x, y, w, h); return true; }
+    return false;
+}
+function drawCanvasImgFit(name, cx, cy, maxSize) {
+    const img = canvasImgCache[name];
+    if(img && img.complete && img.naturalWidth > 0) {
+        let s = Math.min(maxSize/img.naturalWidth, maxSize/img.naturalHeight);
+        ctx.drawImage(img, cx-img.naturalWidth*s/2, cy-img.naturalHeight*s/2, img.naturalWidth*s, img.naturalHeight*s);
+        return true;
+    }
+    return false;
+}
+
+function spawnRandomBuff() {
+    let emptyHexes = Object.values(mapHexes).filter(h => !h.isWater && !cities.some(c => c.q===h.q && c.r===h.r));
+    if(emptyHexes.length > 0) {
+        let target = emptyHexes[Math.floor(Math.random()*emptyHexes.length)];
+        let types = ['chicken', 'rage', 'gold', 'lightning'];
+        buffs.push({ x: target.x, y: target.y, type: types[Math.floor(Math.random()*types.length)], life: 15 });
+    }
+}
+
+function initMap() {
+    mapHexes = {}; cities = []; troops = []; particles = []; floatingTexts = []; buffs = []; projectiles = [];
+    ingameCoins = 50; ingameTimer = 120; p1Morale = 50; p2Morale = 50;
+    isCelebrating = false; matchWon = false; celebrateTimer = 0;
+
+    for (let r = 0; r < MAP_ROWS; r++) {
+        let q_offset = Math.floor(r/2);
+        for (let q = -q_offset; q < MAP_COLS - q_offset; q++) {
+            if (r < 1 || r > MAP_ROWS - 2) continue;
+            let isWater = (r === 7), isBridge = isWater && (q+q_offset === 2 || q+q_offset === 6);
+            if(isBridge) isWater = false;
+            mapHexes[`${q},${r}`] = { q, r, x: HEX_SIZE*Math.sqrt(3)*(q+r/2), y: HEX_SIZE*3/2*r, isWater };
+        }
+    }
+
+    const cx = Math.floor(MAP_COLS / 2);
+    function addCity(q, r, owner, hp, max, isMain=false, bType=0) {
+        let h = mapHexes[`${q},${r}`];
+        if(h) cities.push({ id: cities.length, q, r, x: h.x, y: h.y, owner, troops: hp, maxTroops: max, radius: isMain?42:30, isMain, qArr: [], bType, level: 1, shootTimer: 0 });
+    }
+
+    addCity(cx - Math.floor(12/2), 12, 1, 50, 200, true, 0);
+    addCity(cx - Math.floor(2/2), 2, 2, 50+state.level*10, 120+state.level*15, true, 0);
+    
+    for(let i=0; i<5; i++) {
+        let attempts = 0;
+        while(attempts < 20) {
+            let r = 3 + Math.floor(Math.random()*8); if(r===7) r=8;
+            let q = Math.floor(Math.random()*(MAP_COLS-2)) - Math.floor(r/2) + 1;
+            let h = mapHexes[`${q},${r}`];
+            if(h && !h.isWater) {
+                let tooClose = cities.some(c => getDist(h.x, h.y, c.x, c.y) < 70); 
+                if(!tooClose) { 
+                    let bt = 0; let rand = Math.random();
+                    if(rand < 0.25) bt = 1; else if(rand < 0.45) bt = 2; 
+                    addCity(q, r, 0, 20+state.level*3, 60+state.level*5, false, bt); 
+                    break; 
+                }
+            }
+            attempts++;
+        }
+    }
+    updateVoronoi();
+}
+
+function updateVoronoi() {
+    for(let k in mapHexes) {
+        if(mapHexes[k].isWater) continue; let md = Infinity, o = 0;
+        cities.forEach(c => { let d = getDist(mapHexes[k].x, mapHexes[k].y, c.x, c.y)-c.radius; if(d<md) { md=d; o=c.owner; } });
+        mapHexes[k].owner = o;
+    }
+}
+
+function processQueues() {
+    frameCounter++; if(frameCounter % 4 !== 0) return;
+    
+    let p1Forges = cities.filter(c => c.owner === 1 && c.bType === 2).reduce((sum, c) => sum + c.level, 0);
+    let p2Forges = cities.filter(c => c.owner === 2 && c.bType === 2).reduce((sum, c) => sum + c.level, 0);
+
+    cities.forEach(c => {
+        if(c.qArr.length > 0) {
+            let task = c.qArr[0]; let t = state.troops[task.type]; let lvl = t.level || 1;
+            let baseSize = 14; if(task.type === 'golem') baseSize = 22; else if(task.type === 'bomber') baseSize = 12;
+            
+            let forgeBuff = c.owner === 1 ? p1Forges : (c.owner === 2 ? p2Forges : 0);
+            let dmgMult = 1 + (forgeBuff * 0.15); 
+            let morale = c.owner === 1 ? p1Morale : p2Morale;
+            let mMult = 0.5 + (morale / 100); 
+
+            troops.push({
+                x: c.x + (Math.random()-0.5)*15, y: c.y + (Math.random()-0.5)*15,
+                owner: c.owner, target: task.target, type: task.type, icon: t.icon, hp: 10,
+                spd: t.spd * (1+lvl*0.05) * mMult, 
+                dmg: t.dmg * lvl * task.mul * dmgMult * mMult,
+                size: baseSize + Math.min(8, (task.mul-1)), 
+                color: c.owner===1?'#22c55e':'#ef4444', bounce: Math.random()*10
+            });
+            if(c.owner===1) Sound.dispatch();
+            task.amt--; if(task.amt <= 0) c.qArr.shift();
+        }
+    });
+}
+
+function tryDispatch(start, target, isP, forcedType=null) {
+    if(start===target || start.troops<2) return;
+    let type = forcedType || (isP ? state.selectedCard : 'normal');
+    let tData = state.troops[type];
+    
+    if (isP) {
+        let cost = tData.cost || 0;
+        if (ingameCoins < cost) { floatingTexts.push({x: start.x, y: start.y-40, text: '⭐不足!', color: '#facc15', size: 18, life: 1}); Sound.error(); return; }
+        ingameCoins -= cost; document.getElementById('ingame-coins').innerText = Math.floor(ingameCoins);
+    }
+    
+    let total = Math.floor(start.troops/2); start.troops -= total;
+    let visual = Math.min(12, total); let mul = total/visual;
+    start.qArr.push({ target, amt: visual, type, mul });
+}
+
+function startCelebration(isWin) {
+    isCelebrating = true; matchWon = isWin; celebrateTimer = 4.0; troops = []; 
+    cities.forEach(c => c.owner = isWin ? 1 : 2); updateVoronoi(); Sound.cheer();
+    state.gamesPlayed++;
+}
+
+function updatePhysics(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 300*dt; p.life -= 1.2*dt; if (p.life <= 0) particles.splice(i, 1); }
+    for (let i = floatingTexts.length - 1; i >= 0; i--) { let ft = floatingTexts[i]; ft.y -= 40*dt; ft.life -= dt; if (ft.life <= 0) floatingTexts.splice(i, 1); }
+    for (let i = buffs.length - 1; i >= 0; i--) { buffs[i].life -= dt; if(buffs[i].life <= 0) buffs.splice(i, 1); }
+
+    p1Morale += (50 - p1Morale) * dt * 0.03;
+    p2Morale += (50 - p2Morale) * dt * 0.03;
+    document.getElementById('morale-bar-p1').style.width = p1Morale + '%';
+    document.getElementById('morale-bar-p2').style.width = p2Morale + '%';
+
+    if (isCelebrating) {
+        celebrateTimer -= dt;
+        if (Math.random() < 0.25) {
+            let ccx = (cw/2 - camera.x) / camera.scale; let ccy = (ch/2 - camera.y) / camera.scale;
+            let rx = ccx + (Math.random()-0.5)*cw/camera.scale; let ry = ccy + (Math.random()-0.5)*ch/camera.scale;
+            if(matchWon) {
+                let mainColor = 'hsl('+(Math.random()*60+40)+',100%,60%)'; 
+                for(let i=0; i<30; i++) particles.push({x:rx, y:ry, vx:(Math.random()-0.5)*700, vy:(Math.random()-0.5)*700, size:Math.random()*12+6, color: mainColor, life:1.5+Math.random()});
+            } else {
+                let mainColor = Math.random()>0.5 ? '#475569' : '#7f1d1d';
+                for(let i=0; i<15; i++) particles.push({x:rx, y:ry-200, vx:(Math.random()-0.5)*200, vy:Math.random()*400, size:Math.random()*10+4, color: mainColor, life:1.5+Math.random()});
+            }
+        }
+        if (celebrateTimer <= 0) { isCelebrating = false; showModalFinal(matchWon); }
+        return; 
+    }
+
+    processQueues();
+    
+    cities.forEach(c => { 
+        if(c.owner!==0 && c.troops<c.maxTroops) {
+            let pRate = c.bType === 0 ? (c.isMain?3.5:1.5) : 0.2;
+            pRate *= (1 + c.level * 0.2);
+            if (c.owner === 2) pRate *= (1 + state.level * 0.12);
+            c.troops += pRate * dt; 
+        }
+        
+        if(c.bType === 1 && c.owner !== 0) {
+            c.shootTimer -= dt;
+            if(c.shootTimer <= 0) {
+                let range = c.radius * 4;
+                let target = troops.find(t => t.owner !== c.owner && getDist(c.x, c.y, t.x, t.y) < range);
+                if(target) {
+                    projectiles.push({x: c.x, y: c.y, target: target, spd: 300, owner: c.owner});
+                    c.shootTimer = 1.2 - (c.level * 0.2); 
+                }
+            }
+        }
+    });
+
+    for(let i=projectiles.length-1; i>=0; i--) {
+        let p = projectiles[i];
+        if(!troops.includes(p.target)) { projectiles.splice(i, 1); continue; }
+        let dx = p.target.x - p.x; let dy = p.target.y - p.y; let dist = Math.hypot(dx, dy);
+        if(dist < 15) {
+            p.target.hp -= 5;
+            if(p.target.hp <= 0) { let idx = troops.indexOf(p.target); if(idx>-1) troops.splice(idx, 1); }
+            projectiles.splice(i, 1);
+            for(let j=0; j<4; j++) particles.push({x:p.x, y:p.y, vx:(Math.random()-0.5)*150, vy:(Math.random()-0.5)*150, size:4, color:'#facc15', life:0.5});
+        } else {
+            p.x += (dx/dist) * p.spd * dt; p.y += (dy/dist) * p.spd * dt;
+        }
+    }
+
+    for (let i = troops.length - 1; i >= 0; i--) {
+        let t = troops[i], dx = t.target.x - t.x, dy = t.target.y - t.y, dist = Math.hypot(dx, dy);
+        if (dist > 5) { t.x += (dx/dist)*t.spd*dt; t.y += (dy/dist)*t.spd*dt; }
+
+        for(let j = buffs.length - 1; j >= 0; j--) {
+            if(getDist(t.x, t.y, buffs[j].x, buffs[j].y) < 25) {
+                let b = buffs[j]; buffs.splice(j, 1); Sound.magic();
+                for(let k=0; k<15; k++) particles.push({x:b.x, y:b.y, vx:(Math.random()-0.5)*200, vy:(Math.random()-0.5)*200, size:6, color:'#fff', life:1});
+                if(b.type === 'chicken') {
+                    let ac = cities.filter(c=>c.owner!==t.owner); 
+                    if(ac.length>0) { let trg = ac[Math.floor(Math.random()*ac.length)]; trg.troops=1; floatingTexts.push({x:trg.x, y:trg.y-40, text:'🐔变鸡咒!', color:'#facc15', size:24, life:2}); }
+                } else if(b.type === 'rage') {
+                    troops.forEach(tr=>{ if(tr.owner===t.owner){ tr.size*=1.3; tr.dmg*=1.5; tr.spd*=1.5; }}); 
+                    floatingTexts.push({x:t.x, y:t.y-40, text:'🔥全军狂暴!', color:'#ef4444', size:26, life:2});
+                } else if(b.type === 'gold' && t.owner===1) {
+                    ingameCoins+=80; document.getElementById('ingame-coins').innerText=Math.floor(ingameCoins); 
+                    floatingTexts.push({x:t.x, y:t.y-40, text:'💰+80', color:'#facc15', size:24, life:2});
+                } else if(b.type === 'lightning') {
+                    let ac = cities.filter(c=>c.owner!==t.owner); 
+                    if(ac.length>0) { let trg = ac[Math.floor(Math.random()*ac.length)]; trg.troops = Math.max(0, trg.troops - 40); floatingTexts.push({x:trg.x, y:trg.y-40, text:'⚡天雷暴击!', color:'#38bdf8', size:30, life:2}); }
+                }
+            }
+        }
+
+        if (dist < t.target.radius + 5) {
+            Sound.hit();
+            for(let j=0;j<4;j++) particles.push({x:t.x,y:t.y,vx:(Math.random()-0.5)*180,vy:(Math.random()-0.5)*180-60,size:6,color:t.color,life:1});
+
+            let city = t.target;
+            if (city.owner === t.owner) { city.troops = Math.min(city.maxTroops+50, city.troops+1); } 
+            else {
+                let finalDmg = t.dmg;
+                if(t.type === 'bomber') {
+                    for(let j=0;j<15;j++) particles.push({x:t.x,y:t.y,vx:(Math.random()-0.5)*400,vy:(Math.random()-0.5)*400,size:8,color:'#ef4444',life:0.8});
+                    Sound.magic();
+                }
+
+                city.troops -= finalDmg;
+                floatingTexts.push({x: city.x+(Math.random()-0.5)*20, y: city.y-25, text: `-${Math.floor(finalDmg)}`, color: t.owner===1?'#a3e635':'#ef4444', size: t.type==='bomber'?24:16, life: 1});
+                
+                if (city.troops < 0) {
+                    city.owner = t.owner; city.troops = Math.abs(city.troops); Sound.capture();
+                    if(t.owner === 1) { p1Morale = Math.min(100, p1Morale + 20); p2Morale = Math.max(0, p2Morale - 20); }
+                    if(t.owner === 2) { p2Morale = Math.min(100, p2Morale + 20); p1Morale = Math.max(0, p1Morale - 20); }
+                    floatingTexts.push({x: city.x, y: city.y-50, text: '🔥占领!', color: t.owner===1?'#a3e635':'#ef4444', size: 36, life: 1.5});
+                    updateVoronoi();
+                }
+            }
+            troops.splice(i, 1);
+        }
+    }
+
+    let p1count = cities.filter(c=>c.owner===1).length; let p2count = cities.filter(c=>c.owner===2).length;
+    if(p1count === 0 && !isCelebrating) startCelebration(false);
+    else if(p2count === 0 && !isCelebrating) startCelebration(true);
+
+    if(Math.random() < dt * 0.12) spawnRandomBuff();
+
+    let aiActivityRate = 1.0 + (state.level * 0.2); 
+    if(Math.random() < dt * aiActivityRate) { 
+        let aiCities = cities.filter(c => c.owner === 2);
+        let playerCities = cities.filter(c => c.owner === 1);
+        let neutrals = cities.filter(c => c.owner === 0);
+
+        aiCities.forEach(ac => {
+            let upgradeCost = ac.level * 15;
+            let upgradeChance = 0.05 + (state.level * 0.02);
+            if(ac.level < 4 && ac.troops > upgradeCost + 10 && Math.random() < upgradeChance) {
+                ac.troops -= upgradeCost; ac.level++; ac.maxTroops += 20; 
+                floatingTexts.push({x: ac.x, y: ac.y-40, text: 'AI升级!', color: '#ef4444', size: 16, life: 1});
+                return; 
+            }
+
+            let mustAttack = ac.troops >= ac.maxTroops * 0.85;
+            let aggro = Math.min(0.85, 0.2 + state.level * 0.05); 
+            let wantToAttack = ac.troops > ac.maxTroops * 0.4 && Math.random() < aggro;
+
+            if (mustAttack || wantToAttack) {
+                let target = null;
+                let targets = [...playerCities, ...neutrals].sort((a,b) => {
+                    let dist = getDist(ac.x, ac.y, a.x, a.y);
+                    let hpScore = a.troops * 2;
+                    let valueScore = (state.level > 5 && a.bType > 0) ? -60 : 0; 
+                    let playerHate = (state.level > 8 && a.owner === 1) ? -50 : 0;
+                    let scoreA = hpScore + dist*0.5 + valueScore + playerHate;
+                    
+                    let bDist = getDist(ac.x, ac.y, b.x, b.y);
+                    let bValue = (state.level > 5 && b.bType > 0) ? -60 : 0;
+                    let bHate = (state.level > 8 && b.owner === 1) ? -50 : 0;
+                    let scoreB = (b.troops*2) + bDist*0.5 + bValue + bHate;
+                    
+                    return scoreA - scoreB;
+                });
+                
+                if(targets.length > 0) target = targets[0];
+                if(target) {
+                    let type = 'normal'; let rand = Math.random();
+                    let cavProb = Math.min(0.3, 0.1 + state.level * 0.02);
+                    let golProb = Math.min(0.55, cavProb + state.level * 0.025);
+                    let ninProb = Math.min(0.75, golProb + state.level * 0.02);
+                    let bomProb = Math.min(0.95, ninProb + state.level * 0.02);
+
+                    if (state.level >= 2 && rand < cavProb) type = 'cavalry'; 
+                    else if (state.level >= 4 && rand < golProb) type = 'golem'; 
+                    else if (state.level >= 7 && rand < ninProb) type = 'huweimian';
+                    else if (state.level >= 10 && rand < bomProb) type = 'bomber';
+                    
+                    tryDispatch(ac, target, false, type);
+                }
+            }
+        });
+    }
+}
+
+function drawGame(dt) {
+    ctx.clearRect(0,0,cw,ch); ctx.save();
+    ctx.translate(camera.x, camera.y); ctx.scale(camera.scale, camera.scale);
+
+    for(let k in mapHexes) {
+        let h = mapHexes[k];
+        let cSide = h.isWater?'#0284c7':(h.owner===1?'#1d4ed8':(h.owner===2?'#b91c1c':'#64748b'));
+        ctx.beginPath(); for(let i=0;i<6;i++) ctx.lineTo(h.x+35*Math.cos(Math.PI/3*i-Math.PI/6), h.y+8+35*Math.sin(Math.PI/3*i-Math.PI/6)); ctx.fillStyle=cSide; ctx.fill();
+        let hexType = h.isWater?'hex_water':(h.owner===1?'hex_player':(h.owner===2?'hex_enemy':'hex_neutral'));
+        if(!drawCanvasImg(hexType, h.x-40, h.y-40, 80, 80)) {
+            let cTop = h.isWater?'#0ea5e9':(h.owner===1?'#3b82f6':(h.owner===2?'#ef4444':'#94a3b8'));
+            ctx.beginPath(); for(let i=0;i<6;i++) ctx.lineTo(h.x+35*Math.cos(Math.PI/3*i-Math.PI/6), h.y+35*Math.sin(Math.PI/3*i-Math.PI/6)); ctx.fillStyle=cTop; ctx.fill();
+        }
+        ctx.lineWidth=1; ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.stroke();
+    }
+
+    if(isDragging && dragSource) {
+        let dx = dragX - dragSource.x; let dy = dragY - dragSource.y; let angle = Math.atan2(dy, dx);
+        ctx.beginPath(); ctx.moveTo(dragSource.x, dragSource.y); ctx.lineTo(dragX, dragY);
+        ctx.strokeStyle='#facc15'; ctx.lineWidth=12; ctx.setLineDash([25,20]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.save(); ctx.translate(dragX, dragY); ctx.rotate(angle);
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-30, 20); ctx.lineTo(-30, -20); ctx.closePath();
+        ctx.fillStyle = '#facc15'; ctx.fill(); ctx.restore();
+    }
+
+    cities.forEach(c => {
+        let core = c.owner===1?'#3b82f6':(c.owner===2?'#ef4444':'#cbd5e1'); 
+        ctx.save(); ctx.translate(c.x, c.y);
+        if(dragSource===c) { ctx.beginPath(); ctx.arc(0,0,c.radius+16,0,Math.PI*2); ctx.strokeStyle='#facc15'; ctx.lineWidth=8; ctx.stroke(); }
+        ctx.beginPath(); ctx.ellipse(0, c.radius*0.4, c.radius*1.1, c.radius*0.3, 0, 0, Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(0,0,c.radius,0,Math.PI*2); ctx.fillStyle='#f8fafc'; ctx.fill(); ctx.lineWidth=8; ctx.strokeStyle=core; ctx.stroke();
+        ctx.beginPath(); ctx.arc(0,0,c.radius-12,0,Math.PI*2); ctx.fillStyle=core; ctx.fill();
+        
+        let bName = c.bType === 1 ? 'building_tower' : (c.bType === 2 ? 'building_forge' : 'building_home');
+        let bSize = c.isMain ? 100 : 64;
+        if(!drawCanvasImgFit(bName, 0, -c.radius*0.45, bSize)) {
+            ctx.fillStyle='#fff'; ctx.font=`${c.isMain?24:18}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText(c.bType === 1 ? '🗼' : (c.bType === 2 ? '⚒️' : '🏠'), 0, -c.radius*0.45);
+        }
+        
+        ctx.fillStyle='#fff'; ctx.strokeStyle='#000'; ctx.lineWidth=4; ctx.font=`bold ${c.isMain?26:20}px sans-serif`; 
+        ctx.strokeText(Math.floor(c.troops), 0, c.radius*0.2); ctx.fillText(Math.floor(c.troops), 0, c.radius*0.2);
+        
+        let stars = '⭐'.repeat(c.level);
+        ctx.font=`8px sans-serif`; ctx.fillText(stars, 0, c.radius*0.65);
+        
+        ctx.restore();
+    });
+
+    projectiles.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); 
+        ctx.fillStyle = p.owner===1?'#60a5fa':'#f87171'; ctx.fill();
+        ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
+    });
+
+    troops.forEach(t => {
+        t.bounce += 0.3; let jy = Math.abs(Math.sin(t.bounce))*15;
+        ctx.save();
+        if(t.type === 'huweimian') ctx.globalAlpha = 0.35;
+        ctx.beginPath(); ctx.ellipse(t.x, t.y+4, t.size*0.8, t.size*0.3, 0,0, Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fill();
+        ctx.beginPath(); ctx.ellipse(t.x, t.y-jy + t.size*0.4, t.size*1.2, t.size*0.4, 0,0, Math.PI*2); 
+        ctx.fillStyle=t.owner===1?'rgba(59,130,246,0.9)':'rgba(239,68,68,0.9)'; ctx.fill(); 
+        ctx.font=`${t.size*2}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; 
+        if(t.type === 'bomber' && Math.random() < 0.3) { ctx.fillStyle='#f87171'; ctx.beginPath(); ctx.arc(t.x, t.y-jy-2, t.size*1.2, 0, Math.PI*2); ctx.fill(); }
+        let tSize = t.size * 2.5;
+        if(!drawCanvasImgFit('canvas_troop_'+t.type, t.x, t.y-jy-2, tSize)) {
+            ctx.font=`${t.size*2}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText(t.icon, t.x, t.y-jy-2);
+        }
+        ctx.restore();
+    });
+
+    buffs.forEach(b => {
+        let by = b.y + Math.sin(Date.now()/150)*8;
+        ctx.beginPath(); ctx.ellipse(b.x, b.y+12, 20, 8, 0, 0, Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fill();
+        let buffName = b.type==='chicken'?'buff_chicken':(b.type==='rage'?'buff_rage':(b.type==='gold'?'buff_gold':'buff_lightning'));
+        let buffSize = 32;
+        if(!drawCanvasImg(buffName, b.x-buffSize/2, by-buffSize/2, buffSize, buffSize)) {
+            ctx.font = '32px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText(b.type==='chicken'?'🐔':(b.type==='rage'?'🔥':(b.type==='gold'?'💰':'⚡')), b.x, by);
+        }
+    });
+
+    particles.forEach(p => { ctx.globalAlpha=Math.max(0, p.life); ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha=1; });
+    floatingTexts.forEach(ft => { ctx.fillStyle=ft.color; ctx.font=`bold ${ft.size}px "ZCOOL KuaiLe"`; ctx.textAlign='center'; ctx.strokeStyle='black'; ctx.lineWidth=4; ctx.strokeText(ft.text, ft.x, ft.y); ctx.fillText(ft.text, ft.x, ft.y); });
+
+    if (isCelebrating) {
+        let ccx = (cw/2 - camera.x) / camera.scale; let ccy = (ch/2 - camera.y) / camera.scale;
+        if(matchWon) {
+            ctx.save(); ctx.translate(ccx, ccy); ctx.rotate(Date.now() / 800);
+            for(let i=0; i<12; i++) { ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0, 2500, i*Math.PI/6, (i+0.5)*Math.PI/6); ctx.fillStyle = 'rgba(250, 204, 21, 0.25)'; ctx.fill(); }
+            ctx.restore(); ctx.save(); ctx.translate(ccx, ccy);
+            let textBounce = Math.abs(Math.sin(Date.now()/150)) * 30; ctx.translate(0, -textBounce);
+            ctx.font = '100px "ZCOOL KuaiLe"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 15;
+            ctx.strokeText("大获全胜", 0, 0); ctx.fillText("大获全胜", 0, 0); ctx.restore();
+        } else {
+            ctx.save(); ctx.translate(ccx, ccy);
+            let textShakeX = (Math.random()-0.5)*15; let textShakeY = (Math.random()-0.5)*15; ctx.translate(textShakeX, textShakeY);
+            ctx.font = '100px "ZCOOL KuaiLe"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 15;
+            ctx.strokeText("全军覆没", 0, 0); ctx.fillText("全军覆没", 0, 0); ctx.restore();
+        }
+    }
+    ctx.restore();
+}
+
+function getMouse(cx, cy) { const r=canvas.getBoundingClientRect(); return { x:(cx-r.left-camera.x)/camera.scale, y:(cy-r.top-camera.y)/camera.scale }; }
+
+function getHitCity(p) { let hit = null, minDist = Infinity; cities.forEach(c => { let d = getDist(p.x, p.y, c.x, c.y); if (d < c.radius * 2.0 && d < minDist) { minDist = d; hit = c; } }); return hit; }
+
+canvas.addEventListener('pointerdown', e => {
+    if (!gameActive || isCelebrating) return; let p = getMouse(e.clientX, e.clientY); let c = getHitCity(p); 
+    if(c && c.owner===1) { dragSource=c; isDragging=true; dragX=p.x; dragY=p.y; Sound.click(); try{canvas.setPointerCapture(e.pointerId)}catch(e){} }
+});
+canvas.addEventListener('pointermove', e => { if(isDragging) { let p=getMouse(e.clientX, e.clientY); dragX=p.x; dragY=p.y; }});
+canvas.addEventListener('pointerup', e => {
+    if(isDragging && dragSource) {
+        let p = getMouse(e.clientX, e.clientY); let tc = getHitCity(p); 
+        if(tc) {
+            if(tc !== dragSource) {
+                tryDispatch(dragSource, tc, true);
+            } else {
+                let cost = tc.level * 15;
+                if(tc.level < 4 && tc.troops >= cost) {
+                    tc.troops -= cost; tc.level++; tc.maxTroops += 20; Sound.magic();
+                    floatingTexts.push({x: tc.x, y: tc.y-40, text: '升级!', color: '#4ade80', size: 24, life: 1});
+                } else if (tc.level >= 4) {
+                    floatingTexts.push({x: tc.x, y: tc.y-40, text: '满级!', color: '#facc15', size: 16, life: 1});
+                } else {
+                    floatingTexts.push({x: tc.x, y: tc.y-40, text: `升级需${cost}兵`, color: '#ef4444', size: 16, life: 1});
+                }
+            }
+        }
+        isDragging=false; dragSource=null; try{canvas.releasePointerCapture(e.pointerId)}catch(e){}
+    }
+});
+
+function renderCardsTray() {
+    const t = document.getElementById('ingame-cards-tray'); t.innerHTML = '';
+    for(let id in state.troops) {
+        if(!state.troops[id].unlocked) continue;
+        let cData = state.troops[id];
+        let borderColor = getRarityBorder(cData.rarity);
+        let cardBg = getRarityBg(cData.rarity);
+        let troopImg = getTroopImgSrc(id);
+        
+        let isActive = state.selectedCard===id;
+        let activeClass = isActive ? 'ring-[4px] ring-[#facc15] scale-[1.2] -translate-y-4 z-20 shadow-[0_15px_25px_rgba(250,204,21,0.5)]' : 'border-[3px] shadow-lg opacity-80 scale-95 hover:scale-100';
+        
+        t.innerHTML += `
+            <div onclick="event.stopPropagation(); state.selectedCard='${id}'; Sound.click(); renderCardsTray();" 
+                 class="relative flex-shrink-0 w-[64px] h-[85px] rounded-xl ${activeClass} transition-all duration-300 cursor-pointer pointer-events-auto flex flex-col items-center justify-center"
+                 style="background:url('${cardBg}') no-repeat center/cover;border-color:${borderColor}">
+                <div class="absolute top-0 left-0 text-white border-b-2 border-r-2 border-[#4a044e] rounded-br-lg rounded-tl-[8px] w-5 h-[22px] flex justify-center items-center font-black text-xs z-10 shadow text-shadow-sm" style="background:url('assets/badge_cost.png') no-repeat center/cover">${cData.cost}</div>
+                <img src="${troopImg}" class="mt-1.5 drop-shadow-md z-0 transition-transform" alt="${cData.name}">
+                <div class="text-[10px] font-black text-white text-shadow-cr absolute bottom-1 z-10 w-full text-center leading-tight tracking-wider">${cData.name}</div>
+            </div>`;
+    }
+}
+
+let lastT = 0, timerInt = null;
+function loop(t) {
+    if(!lastT) lastT=t; let dt=(t-lastT)/1000; lastT=t; if(dt>0.1) dt=0.1;
+    if(gameActive) { updatePhysics(dt); drawGame(dt); }
+    requestAnimationFrame(loop);
+}
+
+function enterBattleScreen() {
+    Sound.click(); document.getElementById('screen-lobby').classList.add('hidden'); document.getElementById('screen-game').classList.remove('hidden');
+    cw=window.innerWidth; ch=window.innerHeight; canvas.width=cw; canvas.height=ch;
+    let mW = MAP_COLS*Math.sqrt(3)*HEX_SIZE, mH = MAP_ROWS*1.5*HEX_SIZE;
+    camera.scale = Math.min(cw/(mW+20), (ch-180)/mH); camera.x = cw/2-(mW/2)*camera.scale; camera.y = 80;
+    initMap(); gameActive=true; preloadCanvasImages(); renderCardsTray();
+    
+    document.getElementById('ingame-elixir-bar').style.width = '10%';
+    
+    if(timerInt) clearInterval(timerInt);
+    timerInt = setInterval(() => {
+        if(!gameActive || isCelebrating) return; ingameTimer--; 
+        document.getElementById('ingame-timer').innerText = `1:${ingameTimer.toString().padStart(2,'0')}`;
+        ingameCoins = Math.min(100, ingameCoins + cities.filter(c=>c.owner===1).length*2); 
+        document.getElementById('ingame-coins').innerText = Math.floor(ingameCoins);
+        document.getElementById('ingame-elixir-bar').style.width = Math.min(100, ingameCoins) + '%';
+        document.getElementById('ingame-p1-count').innerText = cities.filter(c=>c.owner===1).length;
+        document.getElementById('ingame-p2-count').innerText = cities.filter(c=>c.owner===2).length;
+        if(ingameTimer<=0 && !isCelebrating) startCelebration(cities.filter(c=>c.owner===1).length >= cities.filter(c=>c.owner===2).length);
+    }, 1000);
+}
+
+function showModalFinal(isWin) {
+    if(!gameActive) return; gameActive = false; 
+    let m = document.getElementById('modal-gameover'); m.classList.remove('hidden');
+    let t = document.getElementById('go-title'), d = document.getElementById('go-desc'), b = document.getElementById('btn-go-action'), f = document.getElementById('btn-free-chest');
+    
+    let gamesToChest = 3 - (state.gamesPlayed % 3); if(gamesToChest === 3) gamesToChest = 0;
+    
+    if(gamesToChest === 0) {
+        f.classList.remove('hidden');
+        f.onclick = () => { m.classList.add('hidden'); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); triggerOpenChest(3); };
+    } else { f.classList.add('hidden'); }
+
+    let chestTip = gamesToChest === 0 ? `<div class="text-[#9333ea] font-black mt-2 animate-pulse"><img src="assets/icon_gold.png" style="display:inline" alt="金币"> 获得一个免费战利品宝箱!</div>` : `<div class="text-[#94a3b8] text-xs mt-3 font-bold">距离下个战利品宝箱还有: <span class="text-[#facc15]">${gamesToChest}</span> 局</div>`;
+
+    if(isWin) {
+        let goldReward = 100 + state.level*20; let diaReward = 10 + Math.floor(state.level/2);
+        state.gold += goldReward; state.diamonds += diaReward; Sound.click(); 
+        t.innerText = "辉煌大胜"; t.className = "text-5xl font-black mb-2 text-[#3b82f6] text-shadow-sm"; 
+        d.innerHTML = `<div class="flex justify-center gap-6 mt-4 mb-2"><div class="flex flex-col items-center bg-[#fefce8] px-4 py-2 rounded-2xl border-[3px] border-[#fde047] shadow"><img src="assets/icon_gold.png"><span class="font-black text-[#ca8a04] mt-1 text-lg">+${goldReward}</span></div><div class="flex flex-col items-center bg-[#f0f9ff] px-4 py-2 rounded-2xl border-[3px] border-[#bae6fd] shadow"><img src="assets/icon_diamond.png"><span class="font-black text-[#0284c7] mt-1 text-lg">+${diaReward}</span></div></div>${chestTip}`;
+        state.level++; b.innerText="确 定"; 
+        b.className="btn-heavy w-full py-4 border-b-[8px] border-[#1e3a8a] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm";
+        b.style.background = "url('assets/btn_confirm_blue.png') no-repeat center/cover";
+        b.onclick = () => { m.classList.add('hidden'); saveGame(); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); };
+    } else {
+        Sound.error(); t.innerText = "💀 遗憾败北"; t.className = "text-4xl font-black mb-2 text-[#64748b] text-shadow-sm"; 
+        d.innerHTML = `<div class="text-[#64748b] text-base mt-2 font-black border-2 border-dashed border-[#94a3b8] p-4 rounded-xl">城池已失守...<br>请重新编排您的卡组后再来挑战吧！</div>${chestTip}`; 
+        b.innerText="重新挑战"; 
+        b.className="btn-heavy w-full py-4 border-b-[8px] border-[#7f1d1d] text-white font-black text-2xl rounded-2xl shadow-xl text-shadow-sm";
+        b.style.background = "url('assets/btn_confirm_red.png') no-repeat center/cover";
+        b.onclick = () => { m.classList.add('hidden'); startMatchmaking(); };
+    }
+}
+
+function exitBattleToLobby() { Sound.click(); gameActive=false; document.getElementById('modal-gameover').classList.add('hidden'); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-lobby').classList.remove('hidden'); saveGame(); }
+
+window.onload = () => { loadSave(); requestAnimationFrame(loop); document.body.addEventListener('pointerdown', ()=>Sound.init(), {once:true}); 
+    let lobby = document.getElementById('screen-lobby');
+    let header = document.getElementById('top-header-bar');
+    if(lobby) lobby.style.background = "url('assets/bg_battle.png') no-repeat center/cover";
+    if(header) { header.style.background = 'transparent'; header.style.boxShadow = 'none'; }
+};
+</script>
+</body>
+</html>
